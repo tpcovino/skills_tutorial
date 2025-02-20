@@ -1,0 +1,29 @@
+---
+title: "if_else"
+author: "Tim Covino"
+date: "2023-04-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(tidyverse)
+```
+
+```{r}
+df <- c(1, 2, 5) %>% 
+  as_tibble() %>% 
+  rename("x" = 1)
+```
+
+```{r}
+df %>% 
+  mutate(new_col = if_else(x == 1, 0, 1))
+
+df %>% 
+  mutate(new_col = if_else(x > 2, x/10, x))
+```
+
+
+
+

@@ -1,0 +1,113 @@
+---
+title: "for loops"
+author: "Tim Covino"
+date: "2023-03-30"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(dataRetrieval)
+
+```
+
+You could type out the sites and names or you could pull it from some whatNWISsites call. 
+```{r}
+sites <- c("06037500", "12363000")
+names <- c("salmon", "flathead")
+params <- c("00060", "00010") # This is temperature and Q. You can obviously change and then also change the readNWISdata to something else and the parameters, etc. 
+start <- as_date("1900-10-01") # Just a nice round number for start time. 
+end <- as_date("2022-09-30") #End of last water year. 
+service <- "dv" # Daily values
+
+# Removed those sites for testing
+# "12363000", "13296000", "12344000", "12447200", "13331500", "06191500"
+
+```
+
+Instead of writing a function, we use for(i in sites). So this will run through the list of sites and download the data and do whatever else you tell it. Then we create a filename that is data_, i. So it will write out data_06037500.csv for the first, data_12363000.csv for the second, so on. Then I just read the .csv in to check and make sure it worked.
+
+```{r}
+for (i in sites) {
+  tmp <- readNWISdata(sites = i, parameterCd = params, service = service, startDate = start, endDate = end) %>% 
+    renameNWISColumns()
+  filename <- paste("data_", i, sep="")
+  write_csv(tmp, file = paste(filename, ".csv", sep=""))
+}
+
+test_df <- read_csv("data_06037500.csv")
+```
+
+
+Here, I've added a second for. For i in sites and for j in names. So when we get to the naming we look to the j for the name to put that in the title of the .csv
+```{r}
+for (i in sites) {
+  for (j in names) {
+  tmp <- readNWISdata(sites = i, parameterCd = params, service = service, startDate = start, endDate = end) %>% 
+    renameNWISColumns()
+  filename <- paste("data_", j, sep="")
+  write_csv(tmp, file = paste(filename, ".csv", sep=""))
+  }
+}
+
+test_df <- read_csv("data_salmon.csv")
+
+library(readr)
+
+list_of_files <- list.files(path = "/Users/timothycovino/Dropbox/classes/ensc_445/skills_tutorial",
+                            recursive = TRUE,
+                            pattern = "\\.csv$",
+                            full.names = TRUE)
+
+df <- readr::read_csv(list_of_files, id = "file_name")
+```
+
+
+```{r}
+for (i in sites) {
+  for (j in names) {
+  tmp <- readNWISdata(sites = i, parameterCd = params, service = service, startDate = start, endDate = end) %>% 
+    renameNWISColumns()
+  assign(paste("data_", j, sep=""), tmp)
+  rm(tmp) 
+  }
+}
+```
+
+```{r}
+testFunction_2 <- function() {      
+  out_list <- vector(mode = "list", length = 5)       
+  for (i in 1:5)  {        
+    x <- data.frame(c(1:10), c(1,2,3,4,5,6,7,8,9,10), c(10:19))        
+    out_list[[i]] <- x 
+    names(out_list)[i] <- paste("name", i, sep = "_")       
+  }
+  return(out_list)
+}
+
+test_list <- testFunction_2()
+```
+
+```{r}
+df <- tibble::tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+
+x <- df$a
+rng <- range(x, na.rm = TRUE)
+
+
+
+```
+
+
+

@@ -1,0 +1,36 @@
+---
+title: "snotelr"
+author: "Tim Covino"
+date: "2025-02-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#install.packages("snotelr")
+library(tidyverse)
+library(snotelr)
+library(rnoaa)
+install.packages("install_github")
+install.packages("remotes")
+install_github("https://github.com/ropensci/rnoaa")
+```
+
+```{r}
+station_data <- ghcnd_stations()
+
+mt_stations <- station_data %>% 
+  filter(state == "MT")
+
+
+
+dat <- as_tibble(snotel_download(site_id = c(384, 587), internal = TRUE)) %>% 
+  # this converts the date string into a date object
+  mutate(date = ymd(date)) %>% 
+  # filter for 1981 - 2023 WY
+  filter(date > as_date("1980-10-01") & date < as_date("2023-09-30")) %>% 
+  # this adds a column that contains the water year
+  mutate(wtr_yr = if_else(lubridate::month(date) > 9, lubridate::year(date) + 1, lubridate::year(date))) %>% 
+  select(description, site_id, date, wtr_yr, swe = snow_water_equivalent, p = precipitation, p_cum = precipitation_cumulative, temp_max = temperature_max, temp_min = temperature_min, temp_mean = temperature_mean)
+```
+
