@@ -60,10 +60,10 @@ test_df <- read_csv("data_salmon.csv")
 
 library(readr)
 
-list_of_files <- list.files(path = "/Users/timothycovino/Dropbox/classes/ensc_445/skills_tutorial",
+list_of_files <- list.files(path = "~/Dropbox/classes/ensc_445/skills_tutorial",
                             recursive = TRUE,
                             pattern = "\\.csv$",
-                            full.names = TRUE)
+                            full.names = FALSE)
 
 df <- readr::read_csv(list_of_files, id = "file_name")
 ```
